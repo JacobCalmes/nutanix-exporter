@@ -50,8 +50,8 @@ func (e *VMExporter) Describe(ch chan<- *prometheus.Desc) {
 
 func (e *VMExporter) Collect(ch chan<- prometheus.Metric) {
 	vms := nutanixApi.GetVms()
-	for vm := range vms.Entities {
-		g := e["num_cores_per_vcpu"].WithLabelValues(vm.Name, vm.UUID)
+	for _, vm := range vms.Entities {
+		g := e.Entity["num_cores_per_vcpu"].WithLabelValues(vm.Name, vm.UUID)
 		g.Set(vm.NumCoresPerVCpu)
 		g.Collect(ch)
 		// for i, k := range e.Entity {
