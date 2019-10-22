@@ -15,7 +15,7 @@ type VMStat struct {
 
 var (
 	VMNameSpace string   = "nutanix_vm"
-	VMLabels    []string = []string{"name", "uuid"}
+	VMLabels    []string = []string{"vm_name", "uuid"}
 )
 
 var VMMetadata map[string]string = map[string]string{}
@@ -51,15 +51,37 @@ func (e *VMExporter) Describe(ch chan<- *prometheus.Desc) {
 func (e *VMExporter) Collect(ch chan<- prometheus.Metric) {
 	vms := nutanixApi.GetVms()
 	for _, vm := range vms.Entities {
-		g := e.Entity["num_cores_per_vcpu"].WithLabelValues(vm.Name, vm.UUID)
-		g.Set(vm.NumCoresPerVCpu)
-		g.Collect(ch)
-		// for i, k := range e.Entity {
-		// 	v, _ := strconv.ParseFloat(s.Entity[i], 64)
-		// 	g := k.WithLabelValues(s.Name)
-		// 	g.Set(v)
-		// 	g.Collect(ch)
-		// }
+		metrics := make(map[string]float64)
+		metrics["num_cores_per_vcpu"] = vm.NumCoresPerVCpu
+		metrics["num_vcpus"] = vm.NumVCpus
+		metrics["memory_mb"] = vm.MemoryMb
+
+		metrics["power_state"] = 0
+		if vm.PowerState == "on" {
+			metrics["power_state"] = 1
+		}
+
+		for k, v := range metrics {
+			g := e.Entity[k].WithLabelValues(vm.Name, vm.UUID)
+			g.Set(v)
+			g.Collect(ch)
+		}
+
+		// g := e.Entity["num_cores_per_vcpu"].WithLabelValues(vm.Name, vm.UUID)
+		// g.Set(vm.NumCoresPerVCpu)
+		// g.Collect(ch)
+
+		// g = e.Entity["num_vcpus"].WithLabelValues(vm.Name, vm.UUID)
+		// g.Set(vm.NumVCpus)
+		// g.Collect(ch)
+
+		// g = e.Entity["memory_mb"].WithLabelValues(vm.Name, vm.UUID)
+		// g.Set(vm.MemoryMb)
+		// g.Collect(ch)
+
+		// g = e.Entity["power_state"].WithLabelValues(vm.Name, vm.UUID)
+		// if vm.PowerState == 'on'g.Set(vm.NumVCpus)
+		// g.Collect(ch)
 	}
 }
 
