@@ -1,9 +1,9 @@
-
 package collector
 
 import (
-	"github.com/claranet/nutanix-exporter/nutanix"
 	"strings"
+
+	"github.com/JacobLube/nutanix-exporter/nutanix"
 )
 
 var nutanixApi *nutanix.Nutanix
