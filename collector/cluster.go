@@ -166,14 +166,14 @@ func (e *ClusterExporter) Describe(ch chan<- *prometheus.Desc) {
 	e.NumNodes.Describe(ch)
 
 	e.Stats = make(map[string]*prometheus.GaugeVec)
-	for k, h := range storageStats {
+	for k, h := range clusterStats {
 		name := normalizeFQN(k)
 		e.Stats[k] = prometheus.NewGaugeVec(prometheus.GaugeOpts{Namespace: clusterNamespace, Name: name, Help: h}, clusterLabels)
 		e.Stats[k].Describe(ch)
 	}
 
 	e.UsageStats = make(map[string]*prometheus.GaugeVec)
-	for k, h := range storageUsageStats {
+	for k, h := range clusterUsageStats {
 		name := normalizeFQN(k)
 		e.UsageStats[k] = prometheus.NewGaugeVec(prometheus.GaugeOpts{Namespace: clusterNamespace, Name: name, Help: h}, clusterLabels)
 		e.UsageStats[k].Describe(ch)
