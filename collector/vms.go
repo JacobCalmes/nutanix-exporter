@@ -66,22 +66,6 @@ func (e *VMExporter) Collect(ch chan<- prometheus.Metric) {
 			g.Set(v)
 			g.Collect(ch)
 		}
-
-		// g := e.Entity["num_cores_per_vcpu"].WithLabelValues(vm.Name, vm.UUID)
-		// g.Set(vm.NumCoresPerVCpu)
-		// g.Collect(ch)
-
-		// g = e.Entity["num_vcpus"].WithLabelValues(vm.Name, vm.UUID)
-		// g.Set(vm.NumVCpus)
-		// g.Collect(ch)
-
-		// g = e.Entity["memory_mb"].WithLabelValues(vm.Name, vm.UUID)
-		// g.Set(vm.MemoryMb)
-		// g.Collect(ch)
-
-		// g = e.Entity["power_state"].WithLabelValues(vm.Name, vm.UUID)
-		// if vm.PowerState == 'on'g.Set(vm.NumVCpus)
-		// g.Collect(ch)
 	}
 }
 
