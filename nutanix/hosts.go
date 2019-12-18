@@ -19,6 +19,9 @@ type HostEntity struct {
 	MemoryCapacity float64 `json:"memory_capacity_in_bytes"`
 	NumVms         int     `json:"num_vms"`
 	BootTime       float64 `json:"boot_time_in_usecs"`
+	NumCpuCores    float64 `json:"num_cpu_cores"`
+	NumCpuThreads  float64 `json:"num_cpu_threads"`
+	NumCpuSockets  float64 `json:"num_cpu_sockets"`
 	Stats          map[string]string
 	UsageStats     map[string]string
 }

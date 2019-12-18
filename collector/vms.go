@@ -15,7 +15,7 @@ type VMStat struct {
 
 var (
 	VMNameSpace string   = "nutanix_vm"
-	VMLabels    []string = []string{"vm_name", "uuid"}
+	VMLabels    []string = []string{"vm_name", "uuid", "host_uuid"}
 )
 
 var VMMetadata map[string]string = map[string]string{}
@@ -62,7 +62,7 @@ func (e *VMExporter) Collect(ch chan<- prometheus.Metric) {
 		}
 
 		for k, v := range metrics {
-			g := e.Entity[k].WithLabelValues(vm.Name, vm.UUID)
+			g := e.Entity[k].WithLabelValues(vm.Name, vm.UUID, vm.HostUUID)
 			g.Set(v)
 			g.Collect(ch)
 		}

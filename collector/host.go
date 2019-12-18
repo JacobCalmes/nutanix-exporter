@@ -117,10 +117,17 @@ var hostUsageStats map[string]string = map[string]string{
 	"storage_tier.ssd.free_bytes":          "EMPTY",
 }
 
+var hostEntity map[string]string = map[string]string{
+	"num_cpu_cores":   "...",
+	"num_cpu_threads": "...",
+	"num_cpu_sockets": "...",
+}
+
 type HostExporter struct {
 	NumVms     *prometheus.GaugeVec
 	Stats      map[string]*prometheus.GaugeVec
 	UsageStats map[string]*prometheus.GaugeVec
+	Entity     map[string]*prometheus.GaugeVec
 }
 
 func (e *HostExporter) Describe(ch chan<- *prometheus.Desc) {
@@ -139,11 +146,27 @@ func (e *HostExporter) Describe(ch chan<- *prometheus.Desc) {
 		e.UsageStats[k] = prometheus.NewGaugeVec(prometheus.GaugeOpts{Namespace: hostNamespace, Name: name, Help: h}, hostLabels)
 		e.UsageStats[k].Describe(ch)
 	}
+
+	e.Entity = make(map[string]*prometheus.GaugeVec)
+	for k, h := range hostEntity {
+		name := normalizeFQN(k)
+		e.Entity[k] = prometheus.NewGaugeVec(prometheus.GaugeOpts{Namespace: hostNamespace, Name: name, Help: h}, hostLabels)
+		e.Entity[k].Describe(ch)
+	}
 }
 
 func (e *HostExporter) Collect(ch chan<- prometheus.Metric) {
 	hosts := nutanixApi.GetHosts()
 	for _, s := range hosts {
+		metrics := make(map[string]float64)
+		metrics["num_cpu_cores"] = s.NumCpuCores
+		metrics["num_cpu_threads"] = s.NumCpuThreads
+		metrics["num_cpu_sockets"] = s.NumCpuSockets
+		for k, v := range metrics {
+			g := e.Entity[k].WithLabelValues(s.Name)
+			g.Set(v)
+			g.Collect(ch)
+		}
 		{
 			g := e.NumVms.WithLabelValues(s.Name)
 			g.Set(float64(s.NumVms))
